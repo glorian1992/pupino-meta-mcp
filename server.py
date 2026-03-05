@@ -416,8 +416,14 @@ Total Spent (All Time): ${spent:.2f}
 
 if __name__ == "__main__":
     import sys
+    import uvicorn
+
     transport = sys.argv[1] if len(sys.argv) > 1 else "streamable-http"
+    port = int(os.environ.get("PORT", 8000))
+
     if transport == "streamable-http":
-        mcp.run(transport="streamable-http", host="0.0.0.0", port=int(os.environ.get("PORT", 8000)))
+        # Get the ASGI app from FastMCP and serve with uvicorn
+        app = mcp.get_asgi_app()
+        uvicorn.run(app, host="0.0.0.0", port=port)
     else:
         mcp.run(transport="stdio")
